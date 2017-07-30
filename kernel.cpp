@@ -1,3 +1,4 @@
+#include types.h
 
 void printf(char* str)
 {
