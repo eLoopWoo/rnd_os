@@ -83,4 +83,3 @@ uint32_t GlobalDescriptorTable::SegmentDescriptor::Limit()
 
     return result;
 }
-
