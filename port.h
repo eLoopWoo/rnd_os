@@ -9,6 +9,7 @@
     {
         protected:
             Port(uint16_t portnumber);
+            // FIXME: Must be virtual (currently isnt because the kernel has no memory management yet)
             ~Port();
             uint16_t portnumber;
     };
