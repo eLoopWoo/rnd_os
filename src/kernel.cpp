@@ -3,6 +3,7 @@
 #include "gdt.h"
 #include "interrupts.h"
 #include "keyboard.h"
+#include "mouse.h"
 
 
 void printf(char* str)
@@ -62,6 +63,7 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
     GlobalDescriptorTable gdt;
     InterruptManager interrupts(0x20, &gdt);
     KeyboardDriver keyboard(&interrupts);
+    MouseDriver mouse(&interrupts);
     interrupts.Activate();
 
     while(1);
