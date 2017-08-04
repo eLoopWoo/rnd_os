@@ -1,12 +1,29 @@
 
 #include "interrupts.h"
 
-
 void printf(char* str);
 
 
-InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
+InterruptHandler::InterruptHandler(InterruptManager* interruptManager, uint8_t InterruptNumber)
+{
+    this->InterruptNumber = InterruptNumber;
+    this->interruptManager = interruptManager;
+    interruptManager->handlers[InterruptNumber] = this;
+}
 
+InterruptHandler::~InterruptHandler()
+{
+    if(interruptManager->handlers[InterruptNumber] == this)
+        interruptManager->handlers[InterruptNumber] = 0;
+}
+
+uint32_t InterruptHandler::HandleInterrupt(uint32_t esp)
+{
+    return esp;
+}
+
+InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
+InterruptManager* InterruptManager::ActiveInterruptManager = 0;
 
 void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     uint16_t CodeSegment, void (*handler)(), uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType)
@@ -110,11 +127,11 @@ uint16_t InterruptManager::HardwareInterruptOffset()
 
 void InterruptManager::Activate()
 {
-    if(ActiveInterruptManager == 0)
-    {
-        ActiveInterruptManager = this;
-        asm("sti");
-    }
+    if(ActiveInterruptManager != 0)
+        ActiveInterruptManager->Deactivate();
+
+    ActiveInterruptManager = this;
+    asm("sti");
 }
 
 void InterruptManager::Deactivate()
@@ -123,18 +140,52 @@ void InterruptManager::Deactivate()
     {
         ActiveInterruptManager = 0;
         asm("cli");
-        
     }
 }
 
 uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp)
 {
-    char* foo = "INTERRUPT 0x00";
-    char* hex = "0123456789ABCDEF";
+    if(ActiveInterruptManager != 0)
+        return ActiveInterruptManager->DoHandleInterrupt(interrupt, esp);
+    return esp;
+}
 
-    foo[12] = hex[(interrupt >> 4) & 0xF];
-    foo[13] = hex[interrupt & 0xF];
-    printf(foo);
+
+uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
+{
+    if(handlers[interrupt] != 0)
+    {
+        esp = handlers[interrupt]->HandleInterrupt(esp);
+    }
+    else if(interrupt != hardwareInterruptOffset)
+    {
+        char* foo = "UNHANDLED INTERRUPT 0x00";
+        char* hex = "0123456789ABCDEF";
+        foo[22] = hex[(interrupt >> 4) & 0xF];
+        foo[23] = hex[interrupt & 0xF];
+        printf(foo);
+    }
+
+    // hardware interrupts must be acknowledged
+    if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16)
+    {
+        programmableInterruptControllerMasterCommandPort.Write(0x20);
+        if(hardwareInterruptOffset + 8 <= interrupt)
+            programmableInterruptControllerSlaveCommandPort.Write(0x20);
+    }
 
     return esp;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
