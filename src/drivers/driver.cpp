@@ -1,5 +1,6 @@
 
-#include "driver.h"
+#include <drivers/driver.h>
+using namespace rnd_os::drivers;
 
 Driver::Driver()
 {

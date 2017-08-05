@@ -1,5 +1,9 @@
 
-#include "keyboard.h"
+#include <drivers/keyboard.h>
+
+using namespace rnd_os::common;
+using namespace rnd_os::drivers;
+using namespace rnd_os::hardwarecommunication;
 
 
 

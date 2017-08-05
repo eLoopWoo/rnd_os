@@ -1,5 +1,7 @@
 
-#include "interrupts.h"
+#include <hardwarecommunication/interrupts.h>
+using namespace rnd_os::common;
+using namespace rnd_os::hardwarecommunication;
 
 void printf(char* str);
 void printfHex(uint8_t);
@@ -24,6 +26,9 @@ uint32_t InterruptHandler::HandleInterrupt(uint32_t esp)
 
 InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
 InterruptManager* InterruptManager::ActiveInterruptManager = 0;
+
+
+
 
 void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     uint16_t CodeSegment, void (*handler)(), uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType)
@@ -159,11 +164,10 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
     }
     else if(interrupt != hardwareInterruptOffset)
     {
-        printf("UNHANDLED INTERRUPT 0x0");
+        printf("UNHANDLED INTERRUPT 0x");
         printfHex(interrupt);
     }
 
-    // hardware interrupts must be acknowledged
     if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16)
     {
         programmableInterruptControllerMasterCommandPort.Write(0x20);
@@ -173,16 +177,3 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
 
     return esp;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
