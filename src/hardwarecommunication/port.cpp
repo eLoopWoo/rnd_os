@@ -1,6 +1,5 @@
 
 #include <hardwarecommunication/port.h>
-
 using namespace rnd_os::common;
 using namespace rnd_os::hardwarecommunication;
 
@@ -88,3 +87,4 @@ uint32_t Port32Bit::Read()
 {
     return Read32(portnumber);
 }
+

@@ -11,6 +11,22 @@ namespace rnd_os
 {
     namespace hardwarecommunication
     {
+        enum BaseAddressRegisterType
+        {
+            MemoryMapping = 0,
+            InputOutput = 1
+        };
+        
+        class BaseAddressRegister
+        {
+        public:
+            bool prefetchable;
+            rnd_os::common::uint8_t* address;
+            rnd_os::common::uint32_t size;
+            BaseAddressRegisterType type;
+        };
+        
+        
         class PeripheralComponentInterconnectDeviceDescriptor
         {
         public:
@@ -46,10 +62,11 @@ namespace rnd_os
             rnd_os::common::uint32_t Read(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device, rnd_os::common::uint16_t function, rnd_os::common::uint32_t registeroffset);
             void Write(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device, rnd_os::common::uint16_t function, rnd_os::common::uint32_t registeroffset, rnd_os::common::uint32_t value);
             bool DeviceHasFunctions(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device);
-        
-            void SelectDrivers(rnd_os::drivers::DriverManager* driverManager);
-            PeripheralComponentInterconnectDeviceDescriptor GetDeviceDescriptor(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device, rnd_os::common::uint16_t function);
             
+            void SelectDrivers(rnd_os::drivers::DriverManager* driverManager, rnd_os::hardwarecommunication::InterruptManager* interrupts);
+            rnd_os::drivers::Driver* GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, rnd_os::hardwarecommunication::InterruptManager* interrupts);
+            PeripheralComponentInterconnectDeviceDescriptor GetDeviceDescriptor(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device, rnd_os::common::uint16_t function);
+            BaseAddressRegister GetBaseAddressRegister(rnd_os::common::uint16_t bus, rnd_os::common::uint16_t device, rnd_os::common::uint16_t function, rnd_os::common::uint16_t bar);
         };
     }
 }
