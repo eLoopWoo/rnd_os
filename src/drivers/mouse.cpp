@@ -24,11 +24,14 @@ void printf(char*);
     void MouseEventHandler::OnMouseUp(uint8_t button)
     {
     }
-
+    
     void MouseEventHandler::OnMouseMove(int x, int y)
     {
     }
-    
+
+
+
+
 
     MouseDriver::MouseDriver(InterruptManager* manager, MouseEventHandler* handler)
     : InterruptHandler(manager, 0x2C),
@@ -51,9 +54,9 @@ void printf(char*);
             handler->OnActivate();
         
         commandport.Write(0xA8);
-        commandport.Write(0x20); 
+        commandport.Write(0x20); // command 0x60 = read controller command byte
         uint8_t status = dataport.Read() | 2;
-        commandport.Write(0x60); 
+        commandport.Write(0x60); // command 0x60 = set controller command byte
         dataport.Write(status);
 
         commandport.Write(0xD4);
@@ -78,7 +81,7 @@ void printf(char*);
         {
             if(buffer[1] != 0 || buffer[2] != 0)
             {
-                handler->OnMouseMove((int)buffer[1], ~((int)buffer[2]));
+                handler->OnMouseMove((int8_t)buffer[1], -((int8_t)buffer[2]));
             }
 
             for(uint8_t i = 0; i < 3; i++)

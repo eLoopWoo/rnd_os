@@ -7,12 +7,13 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <gui/desktop.h>
 
 using namespace rnd_os;
 using namespace rnd_os::common;
 using namespace rnd_os::drivers;
 using namespace rnd_os::hardwarecommunication;
-
+using namespace rnd_os::gui;
 
 
 void printf(char* str)
@@ -130,19 +131,24 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
     
     printf("Initializing Hardware, Stage 1\n");
     
+    
+    Desktop desktop(320, 200, 0x00, 0x00, 0xA8);
+
     DriverManager drvManager;
     
-    PrintfKeyboardEventHandler kbhandler;
-    KeyboardDriver keyboard(&interrupts, &kbhandler);
+    //PrintfKeyboardEventHandler kbhandler;
+    //KeyboardDriver keyboard(&interrupts, &kbhandler);
+    KeyboardDriver keyboard(&interrupts, &desktop);
     drvManager.AddDriver(&keyboard);
     
-    MouseToConsole mousehandler;
-    MouseDriver mouse(&interrupts, &mousehandler);
+    //MouseToConsole mousehandler;
+    //MouseDriver mouse(&interrupts, &mousehandler);
+    MouseDriver mouse(&interrupts, &desktop);
     drvManager.AddDriver(&mouse);
-    
+
     PeripheralComponentInterconnectController PCIController;
     PCIController.SelectDrivers(&drvManager, &interrupts);
-    
+
     VideoGraphicsArray vga;
     
     printf("Initializing Hardware, Stage 2\n");
@@ -153,7 +159,8 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
     
     vga.SetMode(320,200,8);
     
-    vga.FillRectangle(0,0,320,200,0x00,0x00,0xA8);
-    
-    while(1);
+    while(1)
+    {
+        desktop.Draw(&vga);
+    }
 }
