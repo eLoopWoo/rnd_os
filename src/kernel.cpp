@@ -6,6 +6,7 @@
 #include <drivers/driver.h>
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
+#include <drivers/vga.h>
 
 using namespace rnd_os;
 using namespace rnd_os::common;
@@ -141,6 +142,8 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
     
     PeripheralComponentInterconnectController PCIController;
     PCIController.SelectDrivers(&drvManager, &interrupts);
+    
+    VideoGraphicsArray vga;
     
     printf("Initializing Hardware, Stage 2\n");
     drvManager.ActivateAll();
