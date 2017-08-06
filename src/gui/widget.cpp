@@ -4,97 +4,75 @@
 using namespace rnd_os::common;
 using namespace rnd_os::gui;
 
-
-class Widget
+Widget::Widget(Widget* parent, int32_t x, int32_t y, int32_t w, int32_t h,
+                               uint8_t r, uint8_t g, uint8_t b)
+: KeyboardEventHandler()
 {
-    protected:
-        Wiget* parent
-        common::int32_t x;
-        common::int32_t y;
-        common::int32_t w;
-        common::int32_t h;
-        
-        common::int8_t r;
-        common::int8_t g;
-        common::int8_t b;
-        
-    public:
-        
-        Widget::Widget(Wiget* parent, int32_t x, int32_t y, int32_t w, int32_t h, int8_t r, int8_t g, int8_t b)
-        {
-            this->parent = parent;
-            this->x = x;
-            this->y = y;
-            this->w = w;
-            this->h = h;
-            this->r = r;
-            this->g = g;
-            this->b = b;
-            this->Focussable = true;
-        }
+    this->parent = parent;
+    this->x = x;
+    this->y = y;
+    this->w = w;
+    this->h = h;
+    this->r = r;
+    this->g = g;
+    this->b = b;
+    this->Focussable = true;
+}
 
-        Widget::~Widget()
-        {
-        }
+Widget::~Widget()
+{
+}
 
 
-        void Widget::GetFocus(Widget* widget)
-        {
-            if(parent != 0)
-                parent->GetFocus(widget);
-        }
-        void Widget::ModelToScreen(int32_t &x, int32_t& y)
-        {
-            if(parent != 0)
-                parent->MoveToScreen(x,y)
-            x += this->x;
-            y += this->y;
-        }
+void Widget::GetFocus(Widget* widget)
+{
+    if(parent != 0)
+        parent->GetFocus(widget);
+}
+void Widget::ModelToScreen(int32_t &x, int32_t& y)
+{
+    if(parent != 0)
+        parent->ModelToScreen(x,y);
+    x += this->x;
+    y += this->y;
+}
 
-        void Widget::Draw(GraphicsContext* gc)
-        {
-            int X = 0;
-            int Y = 0;
-            ModelToScreen(X, Y);
-            gc->FillRectangle(X, Y, w, h, r, g ,b);
-        }
-            
-        void Widget::OnMouseDown(common::int32_t x, common::int32_t y)
-        {
-            if(Focussable)
-                GetFocus(this);
-        }
-        
-        void Widget::OnMouseUp(common::int32_t x, common::int32_t y)
-        {
-        }
-        
-        void Widget::OnMouseMove(common::int32_t oldx, common::int32_t oldy, common::int32_t newx, common::int32_t newy)
-        {
-        }
+void Widget::Draw(GraphicsContext* gc)
+{
+    int X = 0;
+    int Y = 0;
+    ModelToScreen(X, Y);
+    gc->FillRectangle(X, Y, w, h, r, g ,b);
+}
+    
+void Widget::OnMouseDown(common::int32_t x, common::int32_t y, common::uint8_t button)
+{
+    if(Focussable)
+        GetFocus(this);
+}
 
-        void Widget::OnKeyDown(char* str)
-        {
-        }
-        
-        void Widget::OnKeyUp(char* str)
-        {
-        }
-};
+bool Widget::ContainsCoordinate(common::int32_t x, common::int32_t y)
+{
+    return this->x <= x && x < this->x + this->w
+        && this->y <= y && y < this->y +this->h;
+}
 
+void Widget::OnMouseUp(common::int32_t x, common::int32_t y ,common::uint8_t button)
+{
+}
 
+void Widget::OnMouseMove(common::int32_t oldx, common::int32_t oldy, common::int32_t newx, common::int32_t newy)
+{
+}
 
-
-
-
-
-CompositeWidget::CompositeWidget(Wiget* parent, common::int32_t x, common::int32_t y, common::int32_t w, common::int32_t h, common::int8_t r, common::int8_t g, common::int8_t b)
+CompositeWidget::CompositeWidget(Widget* parent, common::int32_t x, common::int32_t y, common::int32_t w, common::int32_t h, common::uint8_t r, common::uint8_t g, common::uint8_t b)
+: Widget(parent, x,y,w,h, r,g,b)
 {
     focussedChild = 0;
     numChildren = 0;
 }
 
-~CompositeWidget::CompositeWidget()
+CompositeWidget::~CompositeWidget()
 {
 }
 
@@ -106,6 +84,14 @@ void CompositeWidget::GetFocus(Widget* widget)
         parent->GetFocus(this);
 }
 
+bool CompositeWidget::AddChild(Widget* child)
+{
+    if(numChildren >= 100)
+        return false;
+    children[numChildren++] = child;
+    return true;
+}
+
 void CompositeWidget::Draw(GraphicsContext* gc)
 {
     Widget::Draw(gc);
@@ -113,31 +99,31 @@ void CompositeWidget::Draw(GraphicsContext* gc)
         children[i]->Draw(gc);
 }
 
-void CompositeWidget::OnMouseDown(int32_t x, int32_t y)
+void CompositeWidget::OnMouseDown(int32_t x, int32_t y, common::uint8_t button)
 {
     for(int i = 0; i < numChildren; ++i)
     {
         if(children[i]->ContainsCoordinate(x - this->x, y - this->y))
         {
-            children[i]->OnMouseDown(x - this->x, y - this->y);
+            children[i]->OnMouseDown(x - this->x, y - this->y, button);
             break;
         }
     }
 }
 
-void CompositeWidget::OnMouseUp(int32_t x, int32_t y)
+void CompositeWidget::OnMouseUp(int32_t x, int32_t y, uint8_t button)
 {
     for(int i = 0; i < numChildren; ++i)
     {
         if(children[i]->ContainsCoordinate(x - this->x, y - this->y))
         {
-            children[i]->OnMouseUp(x - this->x, y - this->y);
+            children[i]->OnMouseUp(x - this->x, y - this->y, button);
             break;
         }
     }
 }
 
-void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int32_t )
+void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int32_t newy)
 {
     int firstchild = -1;
     for(int i = 0; i < numChildren; ++i)
@@ -161,13 +147,13 @@ void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int3
     }
 }
 
-void CompositeWidget::OnKeyDown(char* str)
+void CompositeWidget::OnKeyDown(char str)
 {
     if(focussedChild !=0)
         focussedChild->OnKeyDown(str);
         
 }
-void CompositeWidget::OnKeyUp(char* str)
+void CompositeWidget::OnKeyUp(char str)
 {
     if(focussedChild !=0)
         focussedChild->OnKeyUp(str);

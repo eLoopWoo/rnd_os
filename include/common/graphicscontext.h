@@ -8,7 +8,7 @@ namespace rnd_os
 {
     namespace common
     {
-        typedef GraphicsContext VideoGraphicsArray;
+        typedef rnd_os::drivers::VideoGraphicsArray GraphicsContext;
     }
 }
     
