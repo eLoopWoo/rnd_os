@@ -176,8 +176,8 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
         desktop.AddChild(&win1);
         Window win2(&desktop, 40,15,30,30, 0x00,0xA8,0x00);
         desktop.AddChild(&win2);
-        Window win2(&desktop, 90,15,80,60, 0x00,0xA8,0x00);
-        desktop.AddChild(&win2);
+        Window win3(&desktop, 90,15,80,60, 0x00,0xA8,0x00);
+        desktop.AddChild(&win3);
     #endif
 
 
