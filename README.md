@@ -35,5 +35,4 @@ make run
 
 ## Example
 
-![alt text](http://imgur.com/a/XSfTU)
-
+![Imgur](http://i.imgur.com/d0cywIJ.jpg)
