@@ -3,9 +3,9 @@
 #define __RND_OS__HARDWARECOMMUNICATION__INTERRUPTMANAGER_H
 
 #include <gdt.h>
+#include <multitasking.h>
 #include <common/types.h>
 #include <hardwarecommunication/port.h>
-
 
 namespace rnd_os
 {

@@ -9,7 +9,7 @@
 #include <drivers/vga.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
-
+#include <multitasking.h>
 
 #define GRAPHICSMODE
 
