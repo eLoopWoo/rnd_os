@@ -17,8 +17,9 @@ _ZN6rnd_os21hardwarecommunication16InterruptManager19HandleException\num\()Ev:
 
 .macro HandleInterruptRequest num
 .global _ZN6rnd_os21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev
-_ZN6rnd_os21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev:
+_ZN6rnd_os21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev:   
     movb $\num + IRQ_BASE, (interruptnumber)
+    pushl $0
     jmp int_bottom
 .endm
 
@@ -63,23 +64,46 @@ HandleInterruptRequest 0x0F
 HandleInterruptRequest 0x31
 
 int_bottom:
-    pusha
-    pushl %ds
-    pushl %es
-    pushl %fs
-    pushl %gs
-
-
+    #save registers
+    #pusha
+    #pushl %ds
+    #pushl %es
+    #pushl %fs
+    #pushl %gs
+    
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+    
+    pushl %edx
+    pushl %ecx
+    pushl %ebx
+    pushl %eax
+    
+    # call c++ handler
     pushl %esp
     push (interruptnumber)
     call _ZN6rnd_os21hardwarecommunication16InterruptManager15HandleInterruptEhj
-    add %esp, 6
-    mov %eax, %esp 
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    popa
+/*     add %esp, 6 */
+    mov %eax, %esp # switch stack
+    
+    #restore registers
+    popl %eax
+    popl %ebx
+    popl %ecx
+    popl %edx
+    
+    popl %esi
+    popl %edi
+    popl %ebp
+    #pop %gs
+    #pop %fs
+    #pop %es
+    #pop %ds
+    #popa
+    
+    add $4, %esp
+    
 
 .global _ZN6rnd_os21hardwarecommunication16InterruptManager15InterruptIgnoreEv
 _ZN6rnd_os21hardwarecommunication16InterruptManager15InterruptIgnoreEv:
