@@ -175,6 +175,7 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
         esp = (uint32_t)taskManager->Schedule((CPUState*)esp);
     }
     
+    
     if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16)
     {
         programmableInterruptControllerMasterCommandPort.Write(0x20);

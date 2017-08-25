@@ -52,7 +52,7 @@ namespace rnd_os{
     public:
         TaskManager();
         ~TaskManager();
-        bool addTask(Task* task);
+        bool AddTask(Task* task);
         CPUState* Schedule(CPUState* cpustate);
     };
  

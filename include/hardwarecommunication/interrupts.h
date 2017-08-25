@@ -33,7 +33,8 @@ namespace rnd_os
 
                 static InterruptManager* ActiveInterruptManager;
                 InterruptHandler* handlers[256];
-
+                TaskManager *taskManager;
+               
                 struct GateDescriptor
                 {
                     rnd_os::common::uint16_t handlerAddressLowBits;
@@ -107,7 +108,7 @@ namespace rnd_os
                 Port8BitSlow programmableInterruptControllerSlaveDataPort;
 
             public:
-                InterruptManager(rnd_os::common::uint16_t hardwareInterruptOffset, rnd_os::GlobalDescriptorTable* globalDescriptorTable);
+                InterruptManager(rnd_os::common::uint16_t hardwareInterruptOffset, rnd_os::GlobalDescriptorTable* globalDescriptorTable, rnd_os::TaskManager* taskManager);
                 ~InterruptManager();
                 rnd_os::common::uint16_t HardwareInterruptOffset();
                 void Activate();

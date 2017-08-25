@@ -11,7 +11,7 @@
 #include <gui/window.h>
 #include <multitasking.h>
 
-#define GRAPHICSMODE
+//#define GRAPHICSMODE
 
 
 using namespace rnd_os;
@@ -149,7 +149,7 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
 
     GlobalDescriptorTable gdt;
     
-    TaskManager taskManager();
+    TaskManager taskManager;
     Task task1(&gdt, taskA);
     Task task2(&gdt, taskB);
     

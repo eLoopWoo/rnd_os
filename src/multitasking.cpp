@@ -46,7 +46,7 @@ TaskManager::TaskManager(){
 }
 TaskManager::~TaskManager(){
 }
-bool TaskManager::addTask(Task* task){
+bool TaskManager::AddTask(Task* task){
     if (numTasks >= 256)
         return false;
     tasks[numTasks++] = task;
