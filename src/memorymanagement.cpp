@@ -109,13 +109,13 @@ void* operator new[](unsigned size, void* ptr)
     return ptr;
 }
 
-void* operator delete(void* ptr)
+void operator delete(void* ptr)
 {
     if(rnd_os::MemoryManager::activeMemoryManager != 0)
         rnd_os::MemoryManager::activeMemoryManager->free(ptr);
 }
 
-void* operator delete(void* ptr)
+void operator delete[](void* ptr)
 {
     if(rnd_os::MemoryManager::activeMemoryManager != 0)
         rnd_os::MemoryManager::activeMemoryManager->free(ptr);
