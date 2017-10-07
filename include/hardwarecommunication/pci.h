@@ -7,6 +7,8 @@
 #include <drivers/driver.h>
 #include <hardwarecommunication/interrupts.h>
 
+#include <memorymanagement.h>
+
 namespace rnd_os
 {
     namespace hardwarecommunication

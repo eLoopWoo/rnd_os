@@ -85,6 +85,41 @@ void MemoryManager::free(void* ptr)
     
 }
 
+void* operator new(unsigned size)
+{
+    if(rnd_os::MemoryManager::activeMemoryManager == 0)
+        return 0;
+    return rnd_os::MemoryManager::activeMemoryManager->malloc(size);
+}
+
+void* operator new[](unsigned size)
+{
+    if(rnd_os::MemoryManager::activeMemoryManager == 0)
+        return 0;
+    return rnd_os::MemoryManager::activeMemoryManager->malloc(size);
+}
+
+void* operator new(unsigned size, void* ptr)
+{
+    return ptr;
+}
+
+void* operator new[](unsigned size, void* ptr)
+{
+    return ptr;
+}
+
+void* operator delete(void* ptr)
+{
+    if(rnd_os::MemoryManager::activeMemoryManager != 0)
+        rnd_os::MemoryManager::activeMemoryManager->free(ptr);
+}
+
+void* operator delete(void* ptr)
+{
+    if(rnd_os::MemoryManager::activeMemoryManager != 0)
+        rnd_os::MemoryManager::activeMemoryManager->free(ptr);
+}
 
 /*
     struct MemoryChunk{

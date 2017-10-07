@@ -148,12 +148,18 @@ BaseAddressRegister PeripheralComponentInterconnectController::GetBaseAddressReg
 
 Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, InterruptManager* interrupts)
 {
+    Driver *driver = 0;
     switch(dev.vendor_id)
     {
         case 0x1022: // AMD
             switch(dev.device_id)
             {
                 case 0x2000: // am79c973 network chip
+                    /*
+                    driver = (amd_am79c973*)MemoryManager::activeMemoryManager->malloc(sizeof(amd_am79c973));
+                    if(driver != 0)
+                        new (driver) amd_am79c973(...);
+                    */
                     printf("AMD am79c973 network");
                     break;
             }
@@ -177,7 +183,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
     }
     
     
-    return 0;
+    return driver;
 }
 
 
