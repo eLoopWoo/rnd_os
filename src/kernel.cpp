@@ -1,6 +1,7 @@
 
 #include <common/types.h>
 #include <gdt.h>
+#include <memorymanagement.h>
 #include <hardwarecommunication/interrupts.h>
 #include <hardwarecommunication/pci.h>
 #include <drivers/driver.h>
@@ -11,7 +12,7 @@
 #include <gui/window.h>
 #include <multitasking.h>
 
-//#define GRAPHICSMODE
+//define GRAPHICSMODE
 
 
 using namespace rnd_os;
@@ -24,7 +25,7 @@ using namespace rnd_os::gui;
 void printf(char* str)
 {
     static uint16_t* VideoMemory = (uint16_t*)0xb8000;
-
+    
     static uint8_t x=0,y=0;
 
     for(int i = 0; str[i] != '\0'; ++i)
@@ -128,9 +129,6 @@ void taskB(){
 }
 
 
-
-
-
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -146,15 +144,35 @@ extern "C" void kernelMain(const void* multiboot_structure, uint32_t)
 {
     printf("Hello!\n");
 
-
     GlobalDescriptorTable gdt;
     
+    //multiboot_structure multiboot.h (gnu project)
+    uint32_t* memupper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+    size_t heap = 10*1024*1024;
+    MemoryManager memoryManager(heap, (*memupper)*1024 - heap - 10*1024);
+    
+    printf("heap: 0x");
+    printfHex((heap >> 24)  & 0xFF);
+    printfHex((heap >> 16)  & 0xFF);
+    printfHex((heap >> 8 )  & 0xFF);
+    printfHex((heap      )  & 0xFF);
+    
+    void* allocated = memoryManager.malloc(1024);
+
+    printf("\nheap: 0x");
+    printfHex(((size_t)allocated >> 24)  & 0xFF);
+    printfHex(((size_t)allocated >> 16)  & 0xFF);
+    printfHex(((size_t)allocated >> 8 )  & 0xFF);
+    printfHex(((size_t)allocated      )  & 0xFF);
+    printf("\n");
+    
     TaskManager taskManager;
+    /*
     Task task1(&gdt, taskA);
     Task task2(&gdt, taskB);
-    
     taskManager.AddTask(&task1);
     taskManager.AddTask(&task2);
+    */
     
     InterruptManager interrupts(0x20, &gdt, &taskManager);
 
