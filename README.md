@@ -24,7 +24,11 @@ sudo apt-get xorriso
 
 Before running make sure to modifiy the name of the vm used in makefile -> run
 ```
+make clean
+
 make run
+
+make install
 ```
 
 ## Built With
